@@ -1,8 +1,10 @@
 # AI Companion Telegram Bot
 
-A NestJS Telegram bot that holds warm, context-aware conversations. The LLM is **provider-agnostic**:
-a pluggable adapter layer lets you run any model by setting `LLM_PROVIDER` + its API key. By default
-the active provider is a free **HuggingFace** model (`Qwen/Qwen2.5-7B-Instruct`); **Anthropic / Claude
+A NestJS Telegram bot that holds warm, context-aware conversations. **The bot's name and persona are
+customizable** — set `BOT_NAME` (default `Ayla`) and the system prompt adapts to it, so you can run
+your own named companion without touching code. The LLM is **provider-agnostic**: a pluggable adapter
+layer lets you run any model by setting `LLM_PROVIDER` + its API key. By default the active provider
+is a free **HuggingFace** model (`Qwen/Qwen2.5-7B-Instruct`); **Anthropic / Claude
 (`claude-haiku-4-5`)** ships as an adapter too and can be the active provider or an optional fallback.
 Conversation history is cached in **Redis** and durably stored in **PostgreSQL**.
 
@@ -77,6 +79,7 @@ redis-cli get conv:<telegramId>   # see the cached recent turns
 
 | Variable                | Purpose                                                            |
 | ----------------------- | ----------------------------------------------------------------- |
+| `BOT_NAME`              | The bot's display name / persona name (default `Ayla`)            |
 | `TELEGRAM_BOT_TOKEN`    | BotFather token                                                   |
 | `LLM_PROVIDER`          | Active LLM adapter (`huggingface` \| `anthropic`); default `huggingface` |
 | `LLM_FALLBACK_PROVIDER` | Optional fallback adapter used on a retryable primary failure     |

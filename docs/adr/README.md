@@ -1,6 +1,7 @@
 # Architecture Decision Records
 
-This directory records the significant architectural decisions for the Ayla bot, using lightweight
+This directory records the significant architectural decisions for this bot (whose display name is
+configurable via `BOT_NAME`, default `Ayla`), using lightweight
 [ADRs](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) (Michael Nygard
 format). Each ADR captures one decision: its context, the decision itself, and the consequences.
 

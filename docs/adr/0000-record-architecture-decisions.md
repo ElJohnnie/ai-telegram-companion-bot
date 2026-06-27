@@ -6,7 +6,7 @@ Accepted — 2026-06-27
 
 ## Context
 
-Ayla is a greenfield project that is making several non-obvious technical choices early (LLM
+This is a greenfield project that is making several non-obvious technical choices early (LLM
 abstraction, memory topology, framework). Without a record, the *why* behind each choice is lost,
 and future contributors re-litigate settled questions or break invariants they didn't know existed.
 

@@ -1,4 +1,6 @@
-# Ayla — Roadmap / TODO
+# Roadmap / TODO
+
+> The bot's name is configurable via `BOT_NAME` (default `Ayla`); "the bot" below is name-agnostic.
 
 Status: **core bot working locally** (Telegram → Redis/Postgres → LLM → reply), with a
 provider-agnostic LLM adapter layer. Items below are what's left.

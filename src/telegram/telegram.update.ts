@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Ctx, Help, On, Start, Update } from 'nestjs-telegraf';
 import { Context } from 'telegraf';
 import { message } from 'telegraf/filters';
@@ -7,13 +8,19 @@ import { ChatService } from '../chat/chat.service';
 @Update()
 export class TelegramUpdate {
   private readonly logger = new Logger(TelegramUpdate.name);
+  private readonly botName: string;
 
-  constructor(private readonly chat: ChatService) {}
+  constructor(
+    private readonly chat: ChatService,
+    config: ConfigService,
+  ) {
+    this.botName = config.getOrThrow<string>('BOT_NAME').trim();
+  }
 
   @Start()
   async onStart(@Ctx() ctx: Context): Promise<void> {
     await ctx.reply(
-      "Hi, I'm Ayla 💬 — I'm here to chat whenever you are. What's on your mind?",
+      `Hi, I'm ${this.botName} 💬 — I'm here to chat whenever you are. What's on your mind?`,
     );
   }
 
