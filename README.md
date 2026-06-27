@@ -44,6 +44,18 @@ npm run start:dev             # start the bot (long polling)
 
 Message your bot on Telegram. `/start` greets you; any text gets a reply.
 
+### Day-to-day: one command to run it
+
+After the one-time setup above, just use:
+
+```bash
+npm run dev     # brings up Postgres + Redis, applies migrations, starts the bot
+npm run stop    # stops the datastores (Ctrl+C already stops the bot)
+```
+
+A shell shortcut `ayla` is also installed (in `~/.zshrc`) — type `ayla` from any terminal to start
+everything. Open a new terminal (or `source ~/.zshrc`) to pick it up.
+
 > **HuggingFace note:** HF migrated to "Inference Providers"; many open models (Llama, Mistral,
 > Zephyr) return **400** on the free tier. `Qwen/Qwen2.5-7B-Instruct` works on the free tier. If a
 > model stops responding, switch `HF_MODEL` or configure the Anthropic fallback (see below).

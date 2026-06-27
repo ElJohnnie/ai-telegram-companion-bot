@@ -7,6 +7,8 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
+    "local": "bash scripts/start-local.sh",
+    "stop:local": "docker compose down",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
