@@ -1,6 +1,7 @@
 import * as Joi from 'joi';
 
 export const envValidationSchema = Joi.object({
+  BOT_NAME: Joi.string().default('Ayla').required(),
   TELEGRAM_BOT_TOKEN: Joi.string().required(),
 
   // LLM selection (provider-agnostic). The active provider's key must be set.

@@ -1,16 +1,24 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ConversationService } from '../conversation/conversation.service';
 import { LlmService } from '../shared/llm/llm.service';
-import { AYLA_SYSTEM_PROMPT } from './persona';
+import { buildPersonaPrompt } from './persona';
 
 @Injectable()
 export class ChatService {
   private readonly logger = new Logger(ChatService.name);
+  private readonly botName: string;
+  private readonly personaPrompt: string;
 
   constructor(
     private readonly conversation: ConversationService,
     private readonly llm: LlmService,
-  ) {}
+    config: ConfigService,
+  ) {
+    this.botName = config.getOrThrow<string>('BOT_NAME').trim();
+    this.personaPrompt = buildPersonaPrompt(this.botName);
+    this.logger.log(`Persona loaded for bot '${this.botName}'`);
+  }
 
   /**
    * Handle one inbound message: assemble context, generate a reply, persist
@@ -24,7 +32,7 @@ export class ChatService {
     const userId = await this.conversation.ensureUser(telegramId, username);
     const context = await this.conversation.getContext(telegramId);
 
-    const reply = await this.llm.generateReply(AYLA_SYSTEM_PROMPT, [
+    const reply = await this.llm.generateReply(this.personaPrompt, [
       ...context,
       { role: 'user', content: text },
     ]);
