@@ -31,27 +31,42 @@ export class LlmService implements OnModuleInit {
         `LLM_PROVIDER='${primaryName}' is not a known adapter. Available: ${[...this.registry.keys()].join(', ')}`,
       );
     }
-    if (!primary.isConfigured()) {
-      throw new Error(
-        `LLM provider '${primaryName}' is selected but not configured (missing API key).`,
-      );
-    }
-    this.primary = primary;
 
+    // Resolve the optional fallback (known + configured + distinct from primary).
     const fallbackName = this.config.get<string>('LLM_FALLBACK_PROVIDER');
+    let fallback: LlmAdapter | undefined;
     if (fallbackName) {
-      const fallback = this.registry.get(fallbackName);
-      if (!fallback || !fallback.isConfigured()) {
+      const candidate = this.registry.get(fallbackName);
+      if (!candidate || !candidate.isConfigured()) {
         this.logger.warn(
           `LLM_FALLBACK_PROVIDER='${fallbackName}' is unknown or not configured; running without a fallback.`,
         );
-      } else if (fallback.name === primary.name) {
+      } else if (candidate.name === primary.name) {
         this.logger.warn(
           'LLM_FALLBACK_PROVIDER equals LLM_PROVIDER; ignoring the fallback.',
         );
       } else {
-        this.fallback = fallback;
+        fallback = candidate;
       }
+    }
+
+    // If the selected primary isn't configured (e.g. missing API key), don't
+    // crash the bot — promote a configured fallback to primary so we can keep
+    // serving. Only fail when there is nothing usable at all.
+    if (!primary.isConfigured()) {
+      if (!fallback) {
+        throw new Error(
+          `LLM provider '${primaryName}' is not configured (missing API key) and no usable fallback is available.`,
+        );
+      }
+      this.logger.warn(
+        `LLM provider '${primaryName}' is not configured; promoting fallback '${fallback.name}' to primary.`,
+      );
+      this.primary = fallback;
+      this.fallback = undefined;
+    } else {
+      this.primary = primary;
+      this.fallback = fallback;
     }
 
     this.logger.log(

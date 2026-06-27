@@ -1,7 +1,7 @@
 {
-  "name": "ayla",
+  "name": "AI companion Telegram bot",
   "version": "0.1.0",
-  "description": "Ayla — AI companion Telegram bot (Claude + HuggingFace fallback)",
+  "description": "AI companion Telegram bot (Claude + HuggingFace fallback)",
   "author": "",
   "private": true,
   "license": "UNLICENSED",

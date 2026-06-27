@@ -1,8 +1,8 @@
+import Anthropic from '@anthropic-ai/sdk';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import Anthropic from '@anthropic-ai/sdk';
-import { LlmAdapter } from '../llm-adapter.interface';
 import { ChatTurn } from '../../conversation/conversation.types';
+import { LlmAdapter } from '../llm-adapter.interface';
 
 /**
  * Anthropic (Claude) adapter. Haiku 4.5 — fastest/cheapest tier. Note: Haiku
@@ -41,9 +41,6 @@ export class AnthropicAdapter implements LlmAdapter {
   }
 
   async generate(systemPrompt: string, messages: ChatTurn[]): Promise<string> {
-    if (!this.apiKey) {
-      throw new Error('Anthropic adapter is not configured (missing ANTHROPIC_API_KEY)');
-    }
     this.client ??= new Anthropic({ apiKey: this.apiKey });
 
     const response = await this.client.messages.create({

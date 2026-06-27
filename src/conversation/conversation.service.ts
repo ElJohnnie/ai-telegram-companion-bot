@@ -54,6 +54,7 @@ export class ConversationService {
       orderBy: { createdAt: 'desc' },
       take: HISTORY_LIMIT,
     });
+    
     const turns: ChatTurn[] = rows
       .reverse()
       .map((r: any) => ({ role: r.role, content: r.content }));
