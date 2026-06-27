@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Anthropic from '@anthropic-ai/sdk';
 import { LlmAdapter } from '../llm-adapter.interface';
-import { ChatTurn } from '../../../conversation/conversation.types';
+import { ChatTurn } from '../../conversation/conversation.types';
 
 /**
  * Anthropic (Claude) adapter. Haiku 4.5 — fastest/cheapest tier. Note: Haiku

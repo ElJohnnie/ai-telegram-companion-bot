@@ -1,7 +1,7 @@
 import { InferenceClient } from '@huggingface/inference';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ChatTurn } from '../../../conversation/conversation.types';
+import { ChatTurn } from '../../conversation/conversation.types';
 import { LlmAdapter } from '../llm-adapter.interface';
 
 const MAX_TOKENS = 512;

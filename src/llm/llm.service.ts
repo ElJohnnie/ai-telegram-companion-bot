@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ChatTurn } from '../../conversation/conversation.types';
+import { ChatTurn } from '../conversation/conversation.types';
 import {
   LLM_ADAPTERS,
   LlmAdapter,

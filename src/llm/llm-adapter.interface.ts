@@ -1,4 +1,4 @@
-import { ChatTurn } from '../../conversation/conversation.types';
+import { ChatTurn } from '../conversation/conversation.types';
 
 export interface LlmAdapter {
   readonly name: string;

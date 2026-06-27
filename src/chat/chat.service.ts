@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ConversationService } from '../conversation/conversation.service';
-import { LlmService } from '../shared/llm/llm.service';
+import { LlmService } from '../llm/llm.service';
 import { buildPersonaPrompt } from './persona';
 
 @Injectable()
