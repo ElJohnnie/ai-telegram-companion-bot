@@ -1,0 +1,36 @@
+# Local datastores only. The bot itself runs on the host via `npm run start:dev`
+# for this pass; its own Dockerfile + cloud deploy come in a later pass.
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ayla
+      POSTGRES_PASSWORD: ayla
+      POSTGRES_DB: ayla
+    ports:
+      - '5432:5432'
+    volumes:
+      - ayla_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ayla -d ayla']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - ayla_redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  ayla_pgdata:
+  ayla_redisdata:

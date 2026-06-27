@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String    @id @default(cuid())
+  telegramId String    @unique
+  username   String?
+  createdAt  DateTime  @default(now())
+  messages   Message[]
+}
+
+enum Role {
+  user
+  assistant
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
