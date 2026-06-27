@@ -2,7 +2,12 @@
 
 ## Status
 
-Accepted — 2026-06-27
+Superseded by [ADR-0009](0009-claude-primary-huggingface-fallback.md) — 2026-06-27. HuggingFace is no
+longer the default *active* provider; it is now the free last-resort **fallback**, with Claude
+(Anthropic Haiku) as the primary. The model choice (`Qwen/Qwen2.5-7B-Instruct`) and free-tier notes
+below still apply to the HuggingFace adapter in its fallback role.
+
+Originally accepted — 2026-06-27
 
 ## Context
 

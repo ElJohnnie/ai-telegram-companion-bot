@@ -18,9 +18,10 @@ ADRs are immutable once accepted. When a decision changes, add a new ADR and mar
 | [0003](0003-two-tier-conversation-memory.md) | Two-tier conversation memory (Redis + PostgreSQL) | Accepted |
 | [0004](0004-prisma-orm.md) | Use Prisma as the ORM | Accepted |
 | [0005](0005-telegram-nestjs-telegraf-long-polling.md) | Telegram via nestjs-telegraf with long polling | Accepted |
-| [0006](0006-huggingface-default-provider-and-model.md) | HuggingFace as default provider; Qwen2.5-7B model | Accepted |
+| [0006](0006-huggingface-default-provider-and-model.md) | HuggingFace as default provider; Qwen2.5-7B model | Superseded by ADR-0009 |
 | [0007](0007-defer-containerization-and-aws-cicd.md) | Defer containerization and AWS CI/CD | Accepted |
 | [0008](0008-single-ec2-docker-compose-host.md) | Self-host full stack on a single EC2 t3.small via Docker Compose | Accepted |
+| [0009](0009-claude-primary-huggingface-fallback.md) | Claude primary, HuggingFace free fallback | Accepted |
 
 ## Template (Nygard)
 

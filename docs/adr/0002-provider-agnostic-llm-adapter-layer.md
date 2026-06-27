@@ -16,7 +16,7 @@ adapter with an API key".
 
 ## Decision
 
-Introduce a provider-agnostic adapter layer in `src/shared/llm/`:
+Introduce a provider-agnostic adapter layer in `src/llm/`:
 
 - **`LlmAdapter` interface** — `name`, `isConfigured()`, `isRetryable(err)`, `generate(systemPrompt,
   messages)`. Each provider's SDK call *and* its transient-error classification live inside its own

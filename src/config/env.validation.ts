@@ -5,8 +5,9 @@ export const envValidationSchema = Joi.object({
   TELEGRAM_BOT_TOKEN: Joi.string().required(),
 
   // LLM selection (provider-agnostic). The active provider's key must be set.
-  LLM_PROVIDER: Joi.string().default('huggingface'),
-  LLM_FALLBACK_PROVIDER: Joi.string().allow('').optional(),
+  // Default: Claude primary, HuggingFace as the free last-resort fallback.
+  LLM_PROVIDER: Joi.string().default('anthropic'),
+  LLM_FALLBACK_PROVIDER: Joi.string().allow('').default('huggingface'),
 
   // Optional key: allow empty so a present-but-blank line in .env is treated as
   // "not configured" (matches the adapter's isConfigured() check).

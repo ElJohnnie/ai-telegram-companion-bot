@@ -52,13 +52,13 @@ Create `~/ayla/.env` (this file holds the secrets and stays on the box — never
 # Telegram
 TELEGRAM_BOT_TOKEN=...
 
-# LLM (provider-agnostic — see ADR-0002 / ADR-0006)
-LLM_PROVIDER=huggingface
+# LLM (provider-agnostic — see ADR-0002 / ADR-0009)
+# Default: Claude primary, HuggingFace as the free last-resort fallback.
+LLM_PROVIDER=anthropic
+ANTHROPIC_API_KEY=...
+LLM_FALLBACK_PROVIDER=huggingface
 HUGGINGFACE_API_KEY=...
 HF_MODEL=Qwen/Qwen2.5-7B-Instruct
-# Optional fallback:
-# LLM_FALLBACK_PROVIDER=anthropic
-# ANTHROPIC_API_KEY=...
 
 # Postgres password (used by both the app's DATABASE_URL and the postgres container)
 POSTGRES_PASSWORD=choose-a-strong-password

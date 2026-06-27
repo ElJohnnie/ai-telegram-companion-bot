@@ -7,17 +7,18 @@ provider-agnostic LLM adapter layer. Items below are what's left.
 
 ## 1. LLM provider hardening
 
-Context: HuggingFace migrated to "Inference Providers". On the free tier many open models
-(Llama, Mistral, Zephyr) return **400** for a given token; we switched the default to
-`Qwen/Qwen2.5-7B-Instruct`, which works. The free tier is also rate-limited and model
-availability can change.
+Context: Default is now **Claude (Anthropic Haiku) primary, HuggingFace free fallback** (see
+ADR-0009). HuggingFace migrated to "Inference Providers"; on the free tier many open models (Llama,
+Mistral, Zephyr) return **400** for a given token, so the fallback uses `Qwen/Qwen2.5-7B-Instruct`,
+which works. The free tier is also rate-limited and model availability can change.
 
 - [x] Switch default `HF_MODEL` to `Qwen/Qwen2.5-7B-Instruct` (works on free tier).
-- [ ] **Configure the Anthropic fallback** so a transient HF failure still gets answered by Claude:
-      set `LLM_FALLBACK_PROVIDER=anthropic` + `ANTHROPIC_API_KEY`. (Code already supports it; just
-      needs the key + env.)
-- [ ] Decide the long-term primary: stay on HF free tier (cheap, flaky) vs. Anthropic Haiku
-      (paid, reliable) vs. another provider.
+- [x] **Decide the long-term primary:** Claude (Anthropic Haiku) is primary; HuggingFace free tier is
+      the last-resort fallback (`LLM_PROVIDER=anthropic` + `LLM_FALLBACK_PROVIDER=huggingface`).
+- [x] **Don't crash on a missing primary key:** `LlmService` promotes the configured fallback to
+      primary at startup when the selected primary isn't configured.
+- [ ] Set the real `ANTHROPIC_API_KEY` in the environment (still blank locally; the bot currently
+      boots on the promoted HuggingFace fallback until it's set).
 - [ ] Surface a friendlier user message when *all* providers fail (currently a generic apology).
 - [ ] Optional: add a 3rd adapter (e.g. OpenAI/Groq/Ollama) to prove the adapter pattern end-to-end.
 - [ ] Handle HF rate-limit (429) explicitly — backoff and/or fall back rather than erroring.
