@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { InferenceClient } from '@huggingface/inference';
-import { LlmAdapter } from '../llm-adapter.interface';
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ChatTurn } from '../../../conversation/conversation.types';
+import { LlmAdapter } from '../llm-adapter.interface';
 
 const MAX_TOKENS = 512;
 
@@ -13,16 +13,14 @@ const MAX_TOKENS = 512;
 @Injectable()
 export class HuggingFaceAdapter implements LlmAdapter {
   readonly name = 'huggingface';
+  private readonly logger = new Logger(HuggingFaceAdapter.name);
   private readonly apiKey?: string;
   private readonly model: string;
   private client?: InferenceClient;
 
   constructor(config: ConfigService) {
     this.apiKey = config.get<string>('HUGGINGFACE_API_KEY');
-    this.model = config.get<string>(
-      'HF_MODEL',
-      'meta-llama/Llama-3.2-3B-Instruct',
-    );
+    this.model = config.get<string>('HF_MODEL', 'Qwen/Qwen2.5-7B-Instruct');
   }
 
   isConfigured(): boolean {
@@ -30,8 +28,6 @@ export class HuggingFaceAdapter implements LlmAdapter {
   }
 
   isRetryable(err: unknown): boolean {
-    // Best-effort: HF's client throws plain errors. Treat network/timeout/5xx
-    // as transient; everything else (4xx, bad request) as non-retryable.
     const status = this.statusOf(err);
     if (status !== undefined) {
       return status >= 500;
@@ -51,14 +47,25 @@ export class HuggingFaceAdapter implements LlmAdapter {
     }
     this.client ??= new InferenceClient(this.apiKey);
 
-    const response = await this.client.chatCompletion({
-      model: this.model,
-      max_tokens: MAX_TOKENS,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        ...messages.map((m) => ({ role: m.role, content: m.content })),
-      ],
-    });
+    let response;
+    try {
+      response = await this.client.chatCompletion({
+        model: this.model,
+        max_tokens: MAX_TOKENS,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...messages.map((m) => ({ role: m.role, content: m.content })),
+        ],
+      });
+    } catch (err) {
+      const status = this.statusOf(err);
+      this.logger.error(
+        `Inference failed for model '${this.model}'` +
+          `${status !== undefined ? ` (status ${status})` : ''}: ` +
+          `${err instanceof Error ? err.message : String(err)}`,
+      );
+      throw err;
+    }
 
     const text = response.choices[0]?.message?.content?.trim();
     if (!text) {

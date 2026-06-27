@@ -11,7 +11,7 @@ export const envValidationSchema = Joi.object({
   // "not configured" (matches the adapter's isConfigured() check).
   ANTHROPIC_API_KEY: Joi.string().allow('').optional(),
   HUGGINGFACE_API_KEY: Joi.string().required(),
-  HF_MODEL: Joi.string().default('meta-llama/Llama-3.2-3B-Instruct'),
+  HF_MODEL: Joi.string().default('Qwen/Qwen2.5-7B-Instruct'),
 
   DATABASE_URL: Joi.string().required(),
   REDIS_URL: Joi.string().required(),

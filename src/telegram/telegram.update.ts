@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { Update, Start, Help, On, Ctx } from 'nestjs-telegraf';
+import { Ctx, Help, On, Start, Update } from 'nestjs-telegraf';
 import { Context } from 'telegraf';
 import { message } from 'telegraf/filters';
 import { ChatService } from '../chat/chat.service';
