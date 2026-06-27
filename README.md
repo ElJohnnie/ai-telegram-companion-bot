@@ -74,7 +74,14 @@ redis-cli get conv:<telegramId>   # see the cached recent turns
 | `DATABASE_URL`          | Postgres connection string                                        |
 | `REDIS_URL`             | Redis connection string                                           |
 
-## Roadmap
+## Deployment
 
-See [TODO.md](./TODO.md) — notably AWS hosting via a GitHub Actions CI/CD pipeline, an app Dockerfile,
-and LLM provider hardening.
+Hosting is a single EC2 `t3.small` running the whole stack (app + Postgres + Redis) in Docker Compose,
+deployed via GitHub Actions. Step-by-step guide: **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**. The
+build/deploy assets (`Dockerfile`, `docker-compose.prod.yml`, `.github/workflows/`) are in the repo;
+you only provision the instance and set the secrets.
+
+## Decisions & roadmap
+
+- Architecture decisions: [docs/adr/](docs/adr/)
+- Remaining work: [TODO.md](./TODO.md) — LLM provider hardening, then the hosting rollout above.

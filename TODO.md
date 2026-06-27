@@ -20,24 +20,37 @@ availability can change.
 - [ ] Optional: add a 3rd adapter (e.g. OpenAI/Groq/Ollama) to prove the adapter pattern end-to-end.
 - [ ] Handle HF rate-limit (429) explicitly — backoff and/or fall back rather than erroring.
 
-## 2. Hosting on AWS via GitHub Actions CI/CD (deferred from the core pass)
+## 2. Hosting — single EC2 t3.small, full stack in Docker Compose (see ADR-0008)
 
-Goal: run the bot 24/7 in the cloud with automated build + deploy on push, as agreed.
+Goal: run the bot 24/7 on **one EC2 `t3.small`** with the **whole stack as containers** (app +
+Postgres + Redis via `docker-compose`). **No managed services** (no ECS/RDS/ElastiCache) initially.
+Automated build + deploy on push via GitHub Actions.
 
 - [ ] **App Dockerfile** (multi-stage: build → slim runtime; run `prisma generate`; `npm run start:prod`).
 - [ ] `.dockerignore` (node_modules, dist, .env, .git).
+- [ ] **Production `docker-compose`** running all three services (app + postgres + redis) on the box,
+      with a named volume for Postgres data and `restart: unless-stopped`. App reaches the datastores
+      via the compose network (`DATABASE_URL`/`REDIS_URL` point at the service names, not localhost).
 - [ ] **GitHub Actions pipeline** (`.github/workflows/deploy.yml`):
       - [ ] CI: install, `prisma generate`, `npm run build`, `npm run lint` on every push/PR.
-      - [ ] CD on `main`: build image → push to **Amazon ECR** → deploy.
-- [ ] **AWS target** — pick one:
-      - [ ] ECS Fargate (managed containers) **or** a single EC2 instance running the image.
-      - [ ] Managed **RDS Postgres** + **ElastiCache Redis** (or run both as containers to start).
-- [ ] **Run Prisma migrations on deploy** (`npx prisma migrate deploy`), not `migrate dev`.
-- [ ] **Secrets**: store `TELEGRAM_BOT_TOKEN`, provider API keys, `DATABASE_URL`, `REDIS_URL` in
-      GitHub Actions secrets + AWS SSM Parameter Store / Secrets Manager (never in the image).
-- [ ] Decide **polling vs webhook**: long polling works anywhere; a webhook (needs a public HTTPS
-      URL) is lighter for production — revisit once hosted.
-- [ ] Health check / restart policy and basic logging/observability.
+      - [ ] CD on `main`: build image → push to a registry (**Amazon ECR** or GHCR) → SSH/SSM to the
+            instance → `docker compose pull && up -d`.
+- [ ] **Run Prisma migrations on deploy** (`npx prisma migrate deploy`, not `migrate dev`) as a
+      one-shot step against the Postgres container.
+- [ ] **Secrets**: `TELEGRAM_BOT_TOKEN`, provider API keys, DB/Redis creds in GitHub Actions secrets;
+      delivered to the instance as an env file / SSM — never baked into the image or committed.
+- [ ] **t3.small sizing (2 vCPU / 2 GiB RAM):** set container memory limits so Postgres + Redis +
+      Node coexist; the LLM runs remotely (HF/Anthropic), so no local model RAM needed.
+- [ ] **Data durability:** Postgres lives on the instance's EBS volume — set up EBS snapshots / a
+      backup so an instance loss doesn't lose history (single box = single point of failure).
+- [ ] **Instance hardening:** restrict the security group (SSH from your IP only; no inbound needed
+      for long polling), keep the OS patched.
+- [ ] Decide **polling vs webhook**: long polling needs no inbound URL (fine on this box); a webhook
+      would require opening HTTPS — revisit only if polling becomes a constraint.
+- [ ] Health check / restart policy (`restart: unless-stopped`) and basic logging.
+
+> Everything is already containerized and env-driven, so migrating later to ECS/RDS/ElastiCache (for
+> HA/scale) is a wiring change, not a rewrite.
 
 ## 3. Code quality / housekeeping
 

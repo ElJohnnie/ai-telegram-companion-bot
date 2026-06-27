@@ -1,0 +1,55 @@
+# Production stack for a single host (EC2 t3.small): app + Postgres + Redis,
+# all on the Compose network. The app reaches the datastores by service name.
+#
+# Required on the host: a `.env` file (see docs/DEPLOYMENT.md) providing
+# TELEGRAM_BOT_TOKEN, the active provider key (HUGGINGFACE_API_KEY / HF_MODEL,
+# optionally ANTHROPIC_API_KEY + LLM_PROVIDER/LLM_FALLBACK_PROVIDER), and
+# POSTGRES_PASSWORD. The deploy workflow sets APP_IMAGE to the pushed image.
+services:
+  app:
+    image: ${APP_IMAGE:-ghcr.io/OWNER/REPO:latest}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Override any localhost values from .env — point at the Compose services.
+      DATABASE_URL: postgresql://ayla:${POSTGRES_PASSWORD}@postgres:5432/ayla?schema=public
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    mem_limit: 512m
+
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ayla
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ayla
+    volumes:
+      - ayla_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ayla -d ayla']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    mem_limit: 768m
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    volumes:
+      - ayla_redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    mem_limit: 256m
+
+volumes:
+  ayla_pgdata:
+  ayla_redisdata:
