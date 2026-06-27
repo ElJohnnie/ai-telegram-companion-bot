@@ -5,9 +5,9 @@ import { REDIS_CLIENT } from '../redis/redis.module';
 import { ChatTurn } from './conversation.types';
 
 /** Recent turns kept for context assembly. */
-const HISTORY_LIMIT = 10;
-/** Redis cache TTL in seconds (1h). */
-const CACHE_TTL_SECONDS = 60 * 60;
+const HISTORY_LIMIT = 1000;
+// Redis cache TTL in seconds (60h).
+const CACHE_TTL_SECONDS = 60 * 60 * 60;
 
 @Injectable()
 export class ConversationService {
